@@ -10,62 +10,61 @@ pipeline {
         )
     }
 
-    environment {
-        REPO_URL = ""
-        SERVER_IP = ""
-        TOMCAT_HOME = ""
-    }
-
     stages {
 
         stage('Initialize') {
             steps {
                 script {
-
-                    if (params.APPLICATION == "Retail") {
-
-                        env.REPO_URL = "https://github.com/gaganDevops/HiGagan.git"
-                        env.SERVER_IP = "15.206.243.220"
-                        env.TOMCAT_HOME = "/opt/tomcat"
-
-                    } else {
-
-                        env.REPO_URL = "https://github.com/gaganDevops/corporate.git"
-                        env.SERVER_IP = "3.109.110.41"
-                        env.TOMCAT_HOME = "/opt/tomcat/apache-tomcat-10.1.57"
-
-                    }
-
-                    echo "Application : ${params.APPLICATION}"
-                    echo "Repository  : ${env.REPO_URL}"
-                    echo "Server      : ${env.SERVER_IP}"
-                    echo "Tomcat Home : ${env.TOMCAT_HOME}"
+                    echo "====================================="
+                    echo "Application Selected : ${params.APPLICATION}"
+                    echo "====================================="
                 }
             }
         }
 
         stage('Checkout') {
             steps {
+                script {
 
-                git branch: 'main',
-                    url: "${env.REPO_URL}"
+                    def repoUrl
 
+                    if (params.APPLICATION == "Retail") {
+                        repoUrl = "https://github.com/gaganDevops/HiGagan.git"
+                    } else {
+                        repoUrl = "https://github.com/gaganDevops/corporate.git"
+                    }
+
+                    echo "Checking out repository:"
+                    echo "${repoUrl}"
+
+                    git branch: 'main', url: repoUrl
+                }
             }
         }
 
         stage('Build') {
             steps {
+                script {
 
-                sh 'mvn clean package'
+                    if (params.APPLICATION == "Retail") {
 
+                        dir('hello-webapp') {
+                            sh 'mvn clean package'
+                        }
+
+                    } else {
+
+                        sh 'mvn clean package'
+
+                    }
+
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-
-                sh "./scripts/deploy.sh ${params.APPLICATION}"
-
+                echo "Deployment script will be added tomorrow."
             }
         }
     }
@@ -73,11 +72,15 @@ pipeline {
     post {
 
         success {
-            echo "Deployment Successful"
+            echo "====================================="
+            echo "Pipeline Executed Successfully"
+            echo "====================================="
         }
 
         failure {
-            echo "Deployment Failed"
+            echo "====================================="
+            echo "Pipeline Execution Failed"
+            echo "====================================="
         }
 
     }
