@@ -45,7 +45,7 @@ Corporate)
     echo "======================================"
 
     echo "Checking SSH Connection..."
-    ssh ${USER}@${HOST} "hostname"
+    sudo -u ec2-user ssh ${USER}@${HOST} "hostname"
 
     echo "Removing old deployment..."
     ssh ${USER}@${HOST} << EOF
@@ -54,10 +54,10 @@ rm -f ${TOMCAT_HOME}/webapps/${WAR_NAME}
 EOF
 
     echo "Copying WAR..."
-    scp ${WAR_FILE} ${USER}@${HOST}:${TOMCAT_HOME}/webapps/
+   sudo -u ec2-user scp ${WAR_FILE} ${USER}@${HOST}:${TOMCAT_HOME}/webapps/
 
     echo "Restarting Tomcat..."
-    ssh ${USER}@${HOST} << EOF
+    sudo -u ec2-user ssh ${USER}@${HOST} << EOF
 ${TOMCAT_HOME}/bin/shutdown.sh || true
 sleep 5
 ${TOMCAT_HOME}/bin/startup.sh
