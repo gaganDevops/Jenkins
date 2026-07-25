@@ -7,6 +7,11 @@ APPLICATION=$1
 WAR_NAME="hello-webapp.war"
 WAR_FILE="application/hello-webapp/target/${WAR_NAME}"
 
+if [ ! -f "${WAR_FILE}" ]; then
+    echo "ERROR: WAR file not found: ${WAR_FILE}"
+    exit 1
+fi
+
 case "$APPLICATION" in
 
 Retail)
@@ -19,18 +24,18 @@ Retail)
     echo "======================================"
 
     echo "Removing old deployment..."
-    rm -rf ${TOMCAT_HOME}/webapps/hello-webapp
-    rm -f ${TOMCAT_HOME}/webapps/${WAR_NAME}
+    rm -rf "${TOMCAT_HOME}/webapps/hello-webapp"
+    rm -f "${TOMCAT_HOME}/webapps/${WAR_NAME}"
 
     echo "Copying WAR..."
-    cp ${WAR_FILE} ${TOMCAT_HOME}/webapps/
+    cp "${WAR_FILE}" "${TOMCAT_HOME}/webapps/"
 
     echo "Restarting Tomcat..."
-    ${TOMCAT_HOME}/bin/shutdown.sh || true
+    "${TOMCAT_HOME}/bin/shutdown.sh" || true
     sleep 5
-    ${TOMCAT_HOME}/bin/startup.sh
+    "${TOMCAT_HOME}/bin/startup.sh"
 
-    echo "Deployment Successful."
+    echo "Retail Deployment Successful."
     ;;
 
 Corporate)
@@ -48,13 +53,13 @@ Corporate)
     sudo -u ec2-user ssh ${USER}@${HOST} "hostname"
 
     echo "Removing old deployment..."
-    ssh ${USER}@${HOST} << EOF
+    sudo -u ec2-user ssh ${USER}@${HOST} << EOF
 rm -rf ${TOMCAT_HOME}/webapps/hello-webapp
 rm -f ${TOMCAT_HOME}/webapps/${WAR_NAME}
 EOF
 
     echo "Copying WAR..."
-   sudo -u ec2-user scp ${WAR_FILE} ${USER}@${HOST}:${TOMCAT_HOME}/webapps/
+    sudo -u ec2-user scp "${WAR_FILE}" ${USER}@${HOST}:${TOMCAT_HOME}/webapps/
 
     echo "Restarting Tomcat..."
     sudo -u ec2-user ssh ${USER}@${HOST} << EOF
@@ -63,13 +68,17 @@ sleep 5
 ${TOMCAT_HOME}/bin/startup.sh
 EOF
 
-    echo "Deployment Successful."
+    echo "Corporate Deployment Successful."
     ;;
 
 *)
 
-    echo "Invalid Application"
+    echo "Usage: $0 {Retail|Corporate}"
     exit 1
     ;;
 
 esac
+
+echo "======================================"
+echo "Deployment Completed Successfully"
+echo "======================================"
