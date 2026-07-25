@@ -14,11 +14,7 @@ pipeline {
 
         stage('Initialize') {
             steps {
-                script {
-                    echo "========================================"
-                    echo "Application Selected : ${params.APPLICATION}"
-                    echo "========================================"
-                }
+                echo "Application Selected : ${params.APPLICATION}"
             }
         }
 
@@ -39,50 +35,42 @@ pipeline {
                             break
 
                         default:
-                            error("Invalid Application Selected")
+                            error("Invalid Application")
                     }
 
-                    echo "Repository : ${repoUrl}"
-
-                    git(
-                        branch: 'main',
-                        url: repoUrl
-                    )
+                    dir("application") {
+                        git branch: "main", url: repoUrl
+                    }
                 }
             }
         }
 
         stage('Build') {
             steps {
-                dir('hello-webapp') {
-                    sh '''
-                        pwd
-                        ls -ltr
-                        mvn clean package
-                    '''
+                dir("application/hello-webapp") {
+                    sh "mvn clean package"
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo "Deploy stage will be implemented in the next phase."
+                sh "chmod +x scripts/deploy.sh"
+                sh "./scripts/deploy.sh ${params.APPLICATION}"
             }
         }
     }
 
     post {
 
-        always {
-            echo "Pipeline execution completed."
-        }
-
         success {
-            echo "SUCCESS"
+            echo "Deployment Successful"
         }
 
         failure {
-            echo "FAILURE"
+            echo "Deployment Failed"
         }
+
     }
+
 }
