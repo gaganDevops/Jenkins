@@ -54,11 +54,11 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                sh "chmod +x scripts/deploy.sh"
-                sh "./deploy.sh ${params.APPLICATION}"
-            }
-        }
+    steps {
+        sh "chmod +x deploy.sh"
+        sh "./deploy.sh ${params.APPLICATION}"
+    }
+}
     }
 
     post {
