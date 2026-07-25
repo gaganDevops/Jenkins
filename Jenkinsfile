@@ -15,74 +15,74 @@ pipeline {
         stage('Initialize') {
             steps {
                 script {
-                    echo "====================================="
+                    echo "========================================"
                     echo "Application Selected : ${params.APPLICATION}"
-                    echo "====================================="
+                    echo "========================================"
                 }
             }
         }
 
-        stage('Checkout') {
+        stage('Checkout Application') {
             steps {
                 script {
 
-                    def repoUrl
+                    def repoUrl = ""
 
-                    if (params.APPLICATION == "Retail") {
-                        repoUrl = "https://github.com/gaganDevops/HiGagan.git"
-                    } else {
-                        repoUrl = "https://github.com/gaganDevops/corporate.git"
+                    switch(params.APPLICATION) {
+
+                        case "Retail":
+                            repoUrl = "https://github.com/gaganDevops/HiGagan.git"
+                            break
+
+                        case "Corporate":
+                            repoUrl = "https://github.com/gaganDevops/corporate.git"
+                            break
+
+                        default:
+                            error("Invalid Application Selected")
                     }
 
-                    echo "Checking out repository:"
-                    echo "${repoUrl}"
+                    echo "Repository : ${repoUrl}"
 
-                    git branch: 'main', url: repoUrl
+                    git(
+                        branch: 'main',
+                        url: repoUrl
+                    )
                 }
             }
         }
 
         stage('Build') {
             steps {
-                script {
-
-                    if (params.APPLICATION == "Retail") {
-
-                        dir('hello-webapp') {
-                            sh 'mvn clean package'
-                        }
-
-                    } else {
-
-                        sh 'mvn clean package'
-
-                    }
-
+                dir('hello-webapp') {
+                    sh '''
+                        pwd
+                        ls -ltr
+                        mvn clean package
+                    '''
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo "Deployment script will be added tomorrow."
+                echo "Deploy stage will be implemented in the next phase."
             }
         }
     }
 
     post {
 
+        always {
+            echo "Pipeline execution completed."
+        }
+
         success {
-            echo "====================================="
-            echo "Pipeline Executed Successfully"
-            echo "====================================="
+            echo "SUCCESS"
         }
 
         failure {
-            echo "====================================="
-            echo "Pipeline Execution Failed"
-            echo "====================================="
+            echo "FAILURE"
         }
-
     }
-
 }
