@@ -5,7 +5,7 @@ set -e
 APPLICATION=$1
 
 WAR_NAME="hello-webapp.war"
-WAR_FILE="hello-webapp/target/${WAR_NAME}"
+WAR_FILE="application/hello-webapp/target/${WAR_NAME}"
 
 case "$APPLICATION" in
 
