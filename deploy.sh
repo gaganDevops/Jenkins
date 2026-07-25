@@ -23,6 +23,8 @@ Retail)
     echo "Deploying Locally"
     echo "======================================"
 
+    echo "Current User : $(whoami)"
+
     echo "Removing old deployment..."
     rm -rf "${TOMCAT_HOME}/webapps/hello-webapp"
     rm -f "${TOMCAT_HOME}/webapps/${WAR_NAME}"
@@ -49,23 +51,36 @@ Corporate)
     echo "Host        : ${HOST}"
     echo "======================================"
 
+    echo "Current User : $(whoami)"
+
+    echo "Checking WAR File..."
+    ls -lh "${WAR_FILE}"
+
     echo "Checking SSH Connection..."
-    sudo -u ec2-user ssh ${USER}@${HOST} "hostname"
+    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} "hostname && whoami"
+
+    echo "Checking Tomcat Directory..."
+    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} "ls -ld ${TOMCAT_HOME}"
 
     echo "Removing old deployment..."
-    sudo -u ec2-user ssh ${USER}@${HOST} << EOF
+    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} <<EOF
 rm -rf ${TOMCAT_HOME}/webapps/hello-webapp
 rm -f ${TOMCAT_HOME}/webapps/${WAR_NAME}
 EOF
 
     echo "Copying WAR..."
-    sudo -u ec2-user scp "${WAR_FILE}" ${USER}@${HOST}:${TOMCAT_HOME}/webapps/
+    sudo -u ec2-user /usr/bin/scp "${WAR_FILE}" ${USER}@${HOST}:${TOMCAT_HOME}/webapps/
+
+    echo "Verifying WAR Copy..."
+    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} "ls -lh ${TOMCAT_HOME}/webapps/${WAR_NAME}"
 
     echo "Restarting Tomcat..."
-    sudo -u ec2-user ssh ${USER}@${HOST} << EOF
+    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} <<EOF
 ${TOMCAT_HOME}/bin/shutdown.sh || true
 sleep 5
 ${TOMCAT_HOME}/bin/startup.sh
+sleep 5
+ps -ef | grep java | grep -v grep
 EOF
 
     echo "Corporate Deployment Successful."
