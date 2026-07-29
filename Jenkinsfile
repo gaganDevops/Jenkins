@@ -1,6 +1,8 @@
 pipeline {
 
-    agent any
+  agent {
+        label "${params.APPLICATION.toLowerCase()}"
+    }
 
     parameters {
         choice(
