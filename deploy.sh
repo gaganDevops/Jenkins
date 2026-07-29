@@ -56,12 +56,12 @@ Corporate)
     echo "Checking WAR File..."
     ls -lh "${WAR_FILE}"
 
-    echo "Checking SSH Connection..."
-    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} "hostname && whoami"
+    echo "Checking Local Server..."
+hostname
+whoami
 
-    echo "Checking Tomcat Directory..."
-    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} "ls -ld ${TOMCAT_HOME}"
-
+echo "Checking Tomcat Directory..."
+ls -ld "${TOMCAT_HOME}"
     echo "Removing old deployment..."
     sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} <<EOF
 rm -rf ${TOMCAT_HOME}/webapps/hello-webapp
