@@ -84,3 +84,14 @@ Corporate)
 
     echo "Corporate Deployment Successful."
     ;;
+    *)
+
+    echo "Usage: $0 {Retail|Corporate}"
+    exit 1
+    ;;
+
+esac
+
+echo "======================================"
+echo "Deployment Completed Successfully"
+echo "======================================"
