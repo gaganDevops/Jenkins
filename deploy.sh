@@ -57,47 +57,30 @@ Corporate)
     ls -lh "${WAR_FILE}"
 
     echo "Checking Local Server..."
-hostname
-whoami
+    hostname
+    whoami
 
-echo "Checking Tomcat Directory..."
-ls -ld "${TOMCAT_HOME}"
+    echo "Checking Tomcat Directory..."
+    ls -ld "${TOMCAT_HOME}"
+
     echo "Removing old deployment..."
-    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} <<EOF
-rm -rf ${TOMCAT_HOME}/webapps/hello-webapp
-rm -f ${TOMCAT_HOME}/webapps/${WAR_NAME}
-EOF
+    sudo rm -rf "${TOMCAT_HOME}/webapps/hello-webapp"
+    sudo rm -f "${TOMCAT_HOME}/webapps/${WAR_NAME}"
 
-echo "Copying WAR..."
-sudo cp "${WAR_FILE}" "${TOMCAT_HOME}/webapps/"
+    echo "Copying WAR..."
+    sudo cp "${WAR_FILE}" "${TOMCAT_HOME}/webapps/"
 
-echo "Verifying WAR Copy..."
-ls -lh "${TOMCAT_HOME}/webapps/${WAR_NAME}"
+    echo "Verifying WAR Copy..."
+    ls -lh "${TOMCAT_HOME}/webapps/${WAR_NAME}"
 
-echo "Restarting Tomcat..."
-sudo "${TOMCAT_HOME}/bin/shutdown.sh"
-sleep 5
-sudo "${TOMCAT_HOME}/bin/startup.sh"
+    echo "Restarting Tomcat..."
+    sudo "${TOMCAT_HOME}/bin/shutdown.sh" || true
+    sleep 5
+    sudo "${TOMCAT_HOME}/bin/startup.sh"
+    sleep 5
 
-echo "Tomcat Restarted Successfully" <<EOF
-${TOMCAT_HOME}/bin/shutdown.sh || true
-sleep 5
-${TOMCAT_HOME}/bin/startup.sh
-sleep 5
-ps -ef | grep java | grep -v grep
-EOF
+    echo "Checking Tomcat Process..."
+    ps -ef | grep java | grep -v grep
 
     echo "Corporate Deployment Successful."
     ;;
-
-*)
-
-    echo "Usage: $0 {Retail|Corporate}"
-    exit 1
-    ;;
-
-esac
-
-echo "======================================"
-echo "Deployment Completed Successfully"
-echo "======================================"
