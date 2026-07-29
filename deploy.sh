@@ -69,7 +69,7 @@ rm -f ${TOMCAT_HOME}/webapps/${WAR_NAME}
 EOF
 
     echo "Copying WAR..."
-    sudo -u ec2-user /usr/bin/scp "${WAR_FILE}" ${USER}@${HOST}:${TOMCAT_HOME}/webapps/
+    sudo cp "${WAR_FILE}" "${TOMCAT_HOME}/webapps/"
 
     echo "Verifying WAR Copy..."
     sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} "ls -lh ${TOMCAT_HOME}/webapps/${WAR_NAME}"
