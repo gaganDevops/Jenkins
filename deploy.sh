@@ -68,14 +68,18 @@ rm -rf ${TOMCAT_HOME}/webapps/hello-webapp
 rm -f ${TOMCAT_HOME}/webapps/${WAR_NAME}
 EOF
 
-    echo "Copying WAR..."
-    sudo cp "${WAR_FILE}" "${TOMCAT_HOME}/webapps/"
+echo "Copying WAR..."
+sudo cp "${WAR_FILE}" "${TOMCAT_HOME}/webapps/"
 
-    echo "Verifying WAR Copy..."
-    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} "ls -lh ${TOMCAT_HOME}/webapps/${WAR_NAME}"
+echo "Verifying WAR Copy..."
+ls -lh "${TOMCAT_HOME}/webapps/${WAR_NAME}"
 
-    echo "Restarting Tomcat..."
-    sudo -u ec2-user /usr/bin/ssh ${USER}@${HOST} <<EOF
+echo "Restarting Tomcat..."
+sudo "${TOMCAT_HOME}/bin/shutdown.sh"
+sleep 5
+sudo "${TOMCAT_HOME}/bin/startup.sh"
+
+echo "Tomcat Restarted Successfully" <<EOF
 ${TOMCAT_HOME}/bin/shutdown.sh || true
 sleep 5
 ${TOMCAT_HOME}/bin/startup.sh
